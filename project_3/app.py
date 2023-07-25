@@ -34,5 +34,34 @@ def get_all_parks():
     else:
         return jsonify({"error": "Failed to fetch data from API"}), 500
 
+
+@app.route('/get_lat_lon' , methods=['GET'])
+def get_lat_lon():
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    data2 = collection.find()
+
+    lat_lon_data = []
+
+    for park in data2:
+        if 'latitude' in park and 'longitude' in park:
+            lat , lon = park['latitude'], park['longitude']
+
+            lat_lon_data.append({"lat":lat, 'lon': lon})
+    
+    return jsonify(lat_lon_data)
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
