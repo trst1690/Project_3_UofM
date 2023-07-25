@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 import requests
 from pymongo import MongoClient
+#from markupsafe import soft_unicode
+#from watchdog.events import EVENT_TYPE_OPENED
 
 app = Flask(__name__)
 BASE_URL = "https://developer.nps.gov/api/v1"
