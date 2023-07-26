@@ -4,6 +4,7 @@ from pymongo import MongoClient
 #from markupsafe import soft_unicode
 #from watchdog.events import EVENT_TYPE_OPENED
 
+
 app = Flask(__name__)
 BASE_URL = "https://developer.nps.gov/api/v1"
 MONGO_URI = "mongodb://localhost:27017"
@@ -48,19 +49,23 @@ def get_lat_lon():
     for park in data2:
         if 'latitude' in park and 'longitude' in park:
             lat , lon = park['latitude'], park['longitude']
+            
+            images = park.get('images', [])
+            image_url = images[0]['url'] if images else ''
+        
+        if images and 'caption' in images[0]:
+                image_caption = images[0]['caption']
+        else:
+                image_caption = '' 
 
-            lat_lon_data.append({"lat":lat, 'lon': lon})
+        lat_lon_data.append(
+                {"lat":lat, 
+                 'lon': lon, 
+                 'name': park['fullName'], 
+                 'Image': image_url,
+                 'Image Caption': image_caption})
     
     return jsonify(lat_lon_data)
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
