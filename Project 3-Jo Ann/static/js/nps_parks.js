@@ -1,83 +1,96 @@
 // Select data from json file to import
-d3.json("my_database.nps_data.json").then(function(data) {
-  console.log(data);
+console.log("Start loading data...");
+d3.json("my_database.nps_data_2.json")
+  .then(function(data) {
+    console.log("Data loaded successfully:", data);
+    const features = data.features; // Assuming the array of features is under the 'features' property
+    createMap(features);
+  })
+  .catch(function(error) {
+    console.error("Error loading data:", error);
+  });
 
+ //Create base layers
+ function createMap(stateparks) {
+  let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
 
-//Create map
-createMap(data.features);
-})
+  let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  });
 
-// //Create base layers
-// function createMap(earthquakes) {
-//     let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//     })
+  //Create a baseMaps Object.
+  let baseMaps = {
+    "Street": street,
+    "Topographic": topo
+  };
 
-//     let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-//         attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-//     })
+  // Create color marker based on the designation of the park
+  function getMarkerColor(feature) {
+    let designation = feature.properties.designation;
+        if (designation.includes("Park")) {
+      return "green";
+    } else if (designation.includes("Trail")) {
+      return "brown";
+    } else if (designation.includes("River")) {
+      return "blue";
+    } else if (designation.includes("Preserve")) {
+      return "coral";
+    } else if (designation.includes("Lake")) {
+      return "lightblue";
+    } else if (designation.includes("Monument")) {
+      return "yellow";
+    } else if (designation.includes("Historic Site")) {
+      return "black";
+    } else {
+      return "grey";
+    }
+  }   
 
-// //Create a baseMaps Object.
-//     let baseMaps = {
-//         "Street": street,        
-//     };
+  //Create state park visual style
+  let stateparksLayer = L.geoJSON(stateparks, {
+    pointToLayer: function (feature, latlng) {
+      return L.circleMarker(latlng, {
+        fillColor: getMarkerColor(feature),
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.75
+      });
+    },
+    onEachFeature: function (feature, marker) {
+      // Check if the 'activities' property exists and is not empty
+      if (feature.properties.activities && feature.properties.activities.length > 0) {
+        let activitiesList = feature.properties.activities.map((activity) => activity.name).join(", ");
+        marker.bindPopup(`
+          <h1>Full Name: ${feature.properties.fullName}</h1>
+          <h2>Designation: ${feature.properties.designation}</h2>
+          <h3>Activities: ${activitiesList}</h3>
+        `);
+      } else {
+        marker.bindPopup(`
+          <h1>FullName: ${feature.properties.fullName}</h1>
+          <h2>Designation: ${feature.properties.designation}</h2>
+          <h3>No activities listed.</h3>
+        `);
+      }
+    }
+  });
 
-// // Get size of markers based on magnitude
-// function getMarkerSize(magnitude) {
-//     return Math.max(0, magnitude) * 3; 
-//   };
+  // Create Overlays Object.
+  let overlays = {
+    "StateParks": stateparksLayer
+  };
 
-// // Create color marker based on the depth of the earthquake
-//     function getMarkerColor(geometry) {
-//         let depth = geometry.coordinates[2];
-//     if (depth >= -10 && depth < 10) {
-//       return '#32CD32'; // Lime Green
-//     } else if (depth >= 10 && depth < 30) {
-//       return '#98FB98'; // Pale Green
-//     } else if (depth >= 30 && depth < 50) {
-//       return '#FFA500'; // Orange
-//     } else if (depth >= 50 && depth < 70) {
-//       return '#FF7F50'; // Coral
-//     } else if (depth >= 70 && depth < 90) {
-//       return '#FF4500'; // OrangeRed
-//     } else {    
-//       return '#FF0000'; // Red
-//     }
-//   }
+  //Create a new map to add layers
+  let Mymap = L.map("map", {
+    center: [38.7128, -94.0059],
+    zoom: 3.6,
+    layers: [street, stateparksLayer]
+  });
 
-// //Create earthquake visual style
-//   let earthquakeLayer = L.geoJSON
-//         (earthquakes, {
-//         pointToLayer: function (feature, latLong) {
-//         return L.circleMarker(latLong, {
-//         radius: getMarkerSize(feature.properties.mag),
-//         fillColor: getMarkerColor(feature.geometry),
-//             weight: 1,
-//             opacity: 1,
-//             fillOpacity: 0.5})   
-//         },  
-//             onEachFeature: function(feature, marker) {
-//             marker.bindPopup(`
-//             <h1>Magnitude: ${feature.properties["mag"]}<h1>
-//             <h2>Depth: ${feature.geometry["coordinates"][2]}</h2>
-//             <h3>Location: ${feature.properties["place"]}</h3>`);
-//             }
-//     })
-
-// // Create Overlays Object.
-//     let overlays = {    
-//        "Earthquakes": earthquakeLayer 
-//     };
-
-// //Create a new map to add layers
-//     let Mymap = L.map("map", {
-//         center: [38.7128, -94.0059],
-//         zoom: 3.6,
-//         layers: [street]
-//     })
-
-// //Create a layer control containing our baseMaps
-// L.control.layers(baseMaps, overlays, {
-//     collapsed: false    
-// }).addTo(Mymap)   
+  //Create a layer control containing our baseMaps
+  L.control.layers(baseMaps, overlays, {
+    collapsed: false
+  }).addTo(Mymap);
 }

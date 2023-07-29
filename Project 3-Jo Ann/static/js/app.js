@@ -47,15 +47,23 @@ function doBarChart(state) {
     // Create data array
     let traces = [trace];
     let layout = {
-      title: "Parks",
+      title: {
+        text: "Type and Count of National Parks in your selected State",
+        font: {
+          family: "Comic Sans MS",
+          size: 24,
+          color: "purple"
+        }
+      },
       xaxis: {
-        tickangle: -45 
+        tickangle: -45,
+        automargin: true
       }
     };
-    // Create Plotly chart
-    Plotly.newPlot("bar", traces, layout);
-  }
-  doBarChart();
+        // Create Plotly chart
+        Plotly.newPlot("bar", traces, layout);
+      }
+      doBarChart();
 
   let dropdown = document.getElementById("selDataset");
   dropdown.addEventListener("change", function() {
