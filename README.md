@@ -14,14 +14,14 @@ The U.S National Park Service API has a variety of comprehensive park data in th
 In this project, our main focus was on API parks, which provide an extensive list of park activities, addresses, coordinates, contacts, descriptions, designations, park names, images, and weather information. To gather this park data, we utilized API calls within a Flask app, and then connected the retrieved data to a MongoDB database. From there, we used JavaScript to process the data for the visualizations, which were integrated into a Bootstrap HTML page.
 
 
-![OUR DATA RETRIEVAL PROCESS](Desktop/dataprocess.png)
+![OUR DATA RETRIEVAL PROCESS](dataprocess.png)
 
 
 For a deeper understanding and preview of our data, we leveraged Jupyter Notebook to access the MongoDB database containing the park data. The dataset consisted of 470 unique records, out of which 36 had unclassified park designations.By following this approach, we were able to present an informative and visually engaging representation of park-related information, making it easier for users to explore and appreciate the diverse offerings of these parks. 
 
 The top five U.S. park designations are National Monument, National Historic Site, National Historic Park, National Park, and an untitled park designation, respectively. In our analysis, we discovered that U.S. National Parks offer the most extensive range of activities for park-goers, with over 1,500 activities in total. Following closely behind, U.S. National Monuments provide visitors with a significant variety of 898 activities. Ranked third are U.S. National Historic Parks, offering 752 activities. These findings align with expectations, as these designations encompass numerous parks, allowing for a diverse array of activities to cater to various interests and preferences. 
 
-![TOP 5 PARK DESIGNATIONS](../barScreenshot.png)
+![TOP 5 PARK DESIGNATIONS](barScreenshot)
 
 
 __________________________________________________________________________________________________________________________________
