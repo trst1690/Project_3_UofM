@@ -23,8 +23,7 @@ For a deeper understanding and preview of our data, we leveraged Jupyter Noteboo
 
 The top five U.S. park designations are National Monument, National Historic Site, National Historic Park, National Park, and an untitled park designation, respectively. In our analysis, we discovered that U.S. National Parks offer the most extensive range of activities for park-goers, with over 1,500 activities in total. Following closely behind, U.S. National Monuments provide visitors with a significant variety of 898 activities. Ranked third are U.S. National Historic Parks, offering 752 activities. These findings align with expectations, as these designations encompass numerous parks, allowing for a diverse array of activities to cater to various interests and preferences. 
 
-![TOP 5 PARK DESIGNATIONS](Desktop/barScreenshot.png)
-<img width="821" alt="barScreenshot" src="https://github.com/trst1690/Project_3_UofM/assets/126814705/1b779c2f-2cb3-4c5d-9e82-601f8db0e9c8">
+![TOP 5 PARK DESIGNATIONS]<img width="821" alt="barScreenshot" src="https://github.com/trst1690/Project_3_UofM/assets/126814705/1b779c2f-2cb3-4c5d-9e82-601f8db0e9c8">
 
 
 
