@@ -4,6 +4,10 @@
 Park Discoveries: Visualizing Data from the U.S. National Park Service
 
 _____________________________________________________________________________________________________________________________
+PROJECT DETAILS: 
+
+_____________________________________________________________________________________________________________________________
+
 
 The U.S National Park Service API has a variety of comprehensive park data in the United States and its territories, including amenities, alerts, general park information, activities, campgrounds, and more. Refer to NPS's full API Documentation here: https://www.nps.gov/subjects/developer/api-documentation.htm#/activities/getActivities. We use NPS to make interactive visualizations for hikers, camp-goers, and park lovers, bringing the great outdoors to life in exciting and interactive ways. 
 
