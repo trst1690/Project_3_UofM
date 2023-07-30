@@ -1,5 +1,5 @@
 //fetch json file with park data
-fetch('data.js')
+fetch('./static/js/data.js')
   .then(response => response.json())
   .then(data => {
   
