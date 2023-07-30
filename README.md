@@ -10,9 +10,9 @@ ________________________________________________________________________________
 
 Park Discoveries: Visualizing Data from the U.S. National Park Service
 
-The U.S National Park Service API has a variety of comprehensive park data in the United States and its territories, including amenities, alerts, general park information, activities, campgrounds, and more. Refer to NPS's full API Documentation here: https://www.nps.gov/subjects/developer/api-documentation.htm#/activities/getActivities. We use NPS to make interactive visualizations for hikers, camp-goers, and park lovers, bringing the great outdoors to life in exciting and interactive ways. 
+The U.S National Park Service API has a variety of comprehensive park data in the United States and its territories, including amenities, alerts, general park information, activities, campgrounds, and more. Refer to NPS's full API Documentation here: https://www.nps.gov/subjects/developer/api-documentation.htm#/activities/getActivities. We use NPS to make interactive visualizations for hikers, camp-goers, and park lovers, bringing park data to life in exciting and interactive ways. 
 
-In this project, our main focus was on API parks, which provide an extensive list of park activities, addresses, coordinates, contacts, descriptions, designations, park names, images, and weather information. To gather this park data, we utilized API calls within a Flask app, and then connected the retrieved data to a MongoDB database. From there, we used JavaScript to process the data for the visualizations, which were integrated into a Bootstrap HTML page.
+In this project, our main focus was on API parks, which provide an extensive list of park activities, addresses, coordinates, contacts, descriptions, designations, park names, images, weather information, etc. To gather this park data, we utilized API calls within a Flask app, and then connected the retrieved data to a MongoDB database. From there, we used JavaScript to process the data for the visualizations, which were integrated into a Bootstrap HTML page.
 
 
 ![Our Data Retrieval Process](https://github.com/trst1690/Project_3_UofM/assets/126814705/e67eed6a-31be-4bb6-b81d-70c9b1a0f857)
@@ -20,7 +20,7 @@ In this project, our main focus was on API parks, which provide an extensive lis
 
 
 
-For a deeper understanding and preview of our data, we leveraged Jupyter Notebook to access the MongoDB database containing the park data. The dataset consisted of 470 unique records, out of which 36 had unclassified park designations. By following this approach, we were able to present an informative and visually engaging representation of park-related information, making it easier for users to explore and appreciate the diverse offerings of these parks. 
+For a deeper understanding and preview of our data, we leveraged Jupyter Notebook to access the MongoDB database containing the park data. The dataset consisted of 470 unique records, out of which 36 had unclassified park designations. By following this approach, we were able to present an informative and visually engaging representation of park-related information, making it easier for users to explorethe diverse offerings of these parks. 
 
 The top five U.S. park designations are National Monument, National Historic Site, National Historic Park, National Park, and an untitled park designation, respectively. In our analysis, we discovered that U.S. National Parks offers the most extensive range of activities for park-goers, with over 1,500 activities in total. Following closely behind, U.S. National Monuments provide visitors with a significant variety of 898 activities. Ranked third are U.S. National Historic Parks, offering 752 activities. These findings align with our expectations, as these park designations fall under most U.S. parks, catering to various visitor interests and preferences. 
 
@@ -33,6 +33,14 @@ ________________________________________________________________________________
 ABOUT OUR INTERACTIVE VISUALIZATIONS
 
 ___________________________________________________________________________________________________________________________________
+
+ZOOMCHART JAVASCRIPT LIBRARY
+
+We utilized the ZoomChart JavaScript Library to create a map visualization with markers that contain the park names and the number of activities each park offers. We chose ZoomChart as it has a feature to aggregate data points, which helps in reducing the number of markers shown at any given time. While this feature would have been helpful with the 470 parks we retrieved from the API, we were only able to display 45 out of the 470 unique parks. This limitation may be due to ZoomChart's cap on the number of data points that can be preloaded. The purpose of this visualization is to increase access to the number of activities each park provides, ensuring that park visitors make the most of their visit and experience as much as possible. Additionally, it aims to encourage park engagement.
+
+LEAFLET JAVASCRIPT LIBRARY
+
+
 
 
 
