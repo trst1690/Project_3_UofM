@@ -40,11 +40,7 @@ We utilized the ZoomChart JavaScript Library to create a map visualization with 
 
 LEAFLET JAVASCRIPT LIBRARY
 
-
-
-
-
-
+We used Leaflet Javascript Library to create two additional map visualizations and a bar chart. One Leaflet map visualization contains markers for all 470 National Park sites. The markers are color coded depending on the designation of the park (e.g., trail, monument, park, etc.). Clicking on a marker will enable a popup with respective site’s full name, designation type, and list of activities available.  
 
 
 
