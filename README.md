@@ -16,7 +16,8 @@ In this project, our main focus was on API parks, which provide an extensive lis
 
 
 
-![OUR DATA RETRIEVAL PROCESS](../dataprocess.png)
+
+![dataprocess](https://github.com/trst1690/Project_3_UofM/assets/126814705/71dd8aaa-f54f-4441-8875-e6ca76b74664)
 
 
 
