@@ -42,7 +42,9 @@ LEAFLET JAVASCRIPT LIBRARY
 
 We used Leaflet Javascript Library to create two additional map visualizations and a bar chart. One Leaflet map visualization contains markers for all 470 National Park sites. The markers are color coded depending on the designation of the park (e.g., trail, monument, park, etc.). Clicking on a marker will enable a popup with respective site’s full name, designation type, and list of activities available.  
 
+JAVASCRIP
 
+We exported from MongoDB to get our DF in Json to build the Bar Chart and Drop Down.  Our Bar Chart, once a state is seleted from the drop down will give an image of the selected state park, as well as a chart indication the number of 'types' of national parks available for visiting in that particular state.
 
 Tools: Flask App, JavaScript, HTML, CSS, Pandas, MongoDB, ZoomChart (JavaScript Library), & Leaflet
 
