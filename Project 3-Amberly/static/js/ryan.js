@@ -1,161 +1,157 @@
+// Leaflet Map
 let map = L.map('map').setView([37.8, -96], 4);
 
 let streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	});
+  maxZoom: 19,
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
 
-	let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-	});
+let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+});
 
+let tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-	let tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
-    
-	// control that shows state info on hover
-	let info = L.control();
+// Control that shows state info on hover
+let info = L.control();
 
-	info.onAdd = function (map) {
-		this._div = L.DomUtil.create('div', 'info');
-		this.update();
-		return this._div;
-	};
-
-	info.update = function (props) {
-    this._div.innerHTML = '<h4>US National Park Regions</h4>' +  (props ?
-        '<b>' + props.name + '</b><br />' +
-        props.Region + ' Region</sup><br>' +
-        'Number of Parks: ' + props.numberOfParks :
-        'Hover over a state');
+info.onAdd = function (map) {
+  this._div = L.DomUtil.create('div', 'info');
+  this.update();
+  return this._div;
 };
 
-	info.addTo(map);
+info.update = function (props) {
+  this._div.innerHTML = '<h4>US National Park Regions</h4>' + (props ?
+    '<b>' + props.name + '</b><br />' +
+    props.Region + ' Region</sup><br>' +
+    'Number of Parks: ' + props.numberOfParks :
+    'Hover over a state');
+};
 
-	// get color depending on Region
-	function getColor(d) {
-		return d === "East" ? '#1f78b4' :
-			d === "West"  ? '#33a02c' :
-			d === "Midwest" ? '#e31a1c' :
-			d === "South" ? '#ff7f00' :
-			'#ffffff'; // Default color if the region doesn't match any of the above
-	}
+info.addTo(map);
 
-	function style(feature) {
-		return {
-			weight: 2,
-			opacity: 1,
-			color: 'white',
-			dashArray: '3',
-			fillOpacity: 0.7,
-			fillColor: getColor(feature.properties.Region)
-		};
-	}
 
-	function highlightFeature(e) {
-		let layer = e.target;
+function style(feature) {
+  return {
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7,
+    fillColor: getColor(feature.properties.Region)
+  };
+}
 
-		layer.setStyle({
-			weight: 5,
-			color: '#666',
-			dashArray: '',
-			fillOpacity: 0.7
-		});
+// Variable to keep track of the currently selected state layer
+let selectedStateLayer = null;
 
-		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-			layer.bringToFront();
-		}
+function highlightFeature(e) {
+  let layer = e.target;
 
-		info.update(layer.feature.properties);
-	}
+  layer.setStyle({
+    weight: 5,
+    color: '#666',
+    dashArray: '',
+    fillOpacity: 0.7
+  });
 
-	let geojson;
+  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+    layer.bringToFront();
+  }
 
-	function resetHighlight(e) {
-		geojson.resetStyle(e.target);
-		info.update();
-	}
+  info.update(layer.feature.properties);
 
-	function zoomToFeature(e) {
-		map.fitBounds(e.target.getBounds());
-	}
+  // If there was a previously selected state layer, reset its style
+  if (selectedStateLayer && selectedStateLayer !== layer) {
+    geojson.resetStyle(selectedStateLayer);
+  }
 
-	function onEachFeature(feature, layer) {
-		layer.on({
-			mouseover: highlightFeature,
-			mouseout: resetHighlight,
-			click: zoomToFeature
-		});
-	}
-	fetch("path/to/states_data.json")
-	.then(response => response.json())
-	.then(data => {
-	  // The fetched data is in JSON format, assign it to the statesData array
-	  statesData = data;
-  	})
-	.catch(error => {
-	  console.error("Error loading states data:", error);
-	});
-  
-	/* global statesData */
-	geojson = L.geoJson(statesData, {
-		style: style,
-		onEachFeature: onEachFeature
-	}).addTo(map);
+  // Store the currently selected state layer
+  selectedStateLayer = layer;
+}
 
-	map.attributionControl.addAttribution('US-State.js data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+function resetHighlight(e) {
+  if (selectedStateLayer && e.target !== selectedStateLayer) {
+    geojson.resetStyle(e.target);
+  }
+}
 
-	let legend = L.control({ position: 'bottomright' });
+function zoomToFeature(e) {
+  map.fitBounds(e.target.getBounds());
+}
 
-	legend.onAdd = function (map) {
-		let div = L.DomUtil.create('div', 'info legend');
-		let regions = ['East', 'West', 'Midwest', 'South']; // Regions
-		let labels = [];
+function onEachFeature(feature, layer) {
+  layer.on({
+    click: zoomToFeature,
+    mouseover: highlightFeature,
+    mouseout: resetHighlight
+  });
+}
 
-		for (let i = 0; i < regions.length; i++) {
-			labels.push(
-				'<i style="background:' + getColor(regions[i]) + '"></i> ' +
-				regions[i]
-			);
-		}
+// Fetch US states data
+fetch("./static/js/us-states.js")
+  .then(response => response.json())
+  .then(data => {
+    geojson = L.geoJson(data, {
+      style: style,
+      onEachFeature: onEachFeature
+    }).addTo(map);
+    map.attributionControl.addAttribution('US-State.js data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+  })
+  .catch(error => {
+    console.error("Error loading states data:", error);
+  });
 
-		div.innerHTML = labels.join('<br>');
-		return div;
-	};
+// Add the GeoJSON layer with states data and event listener for single-click zoom
+geojson = L.geoJson(statesData, {
+  style: style,
+  onEachFeature: function (feature, layer) {
+    layer.on({
+      click: zoomToStateAndShowMarkers, // Attach the click event listener to zoom to state and show markers
+      mouseover: highlightFeature, // Add the mouseover event listener for the hover effect
+      mouseout: resetHighlight // Add the mouseout event listener for resetting the hover effect
+    });
+  }
+}).addTo(map);
 
-	legend.addTo(map);
+map.on('click', zoomToStateAndShowMarkers); // Add the click event listener to the map
 
 // Load the park data from the JSON file and create markers
 let markerLayerGroup = L.layerGroup(); // Create layer group for markers
-	fetch('my_database.nps_data.json')
-		.then(response => response.json())
-		.then(data => {
-			data.forEach(park => {
-				let name = park.name;
-				let description = park.description;
-				let region = park.Region;
-				let lat = park.latitude;
-				let lon = park.longitude;
-				let url = park.url;
-				let weatherInfo = park.weatherInfo;
+fetch('my_database.nps_data.json')
+  .then(response => response.json())
+  .then(data => {
+    data.forEach(park => {
+      let name = park.name;
+      let description = park.description;
+      let region = park.Region;
+      let lat = park.latitude;
+      let lon = park.longitude;
+      let url = park.url;
+      let weatherInfo = park.weatherInfo;
 
-				// Create a marker for each park and add it to the marker layer group
-				let marker = L.marker([lat, lon]);
-				let popupContent = `
-					<b>${name}</b><br>
-					<strong>Description:</strong> ${description}<br><br>
-					<strong>Weather Info:</strong> ${weatherInfo}<br><br>
-					<strong>URL:</strong> <a href="${url}" target="_blank">${url}</a>
-				`;
-				marker.bindPopup(popupContent);
-				marker.addTo(markerLayerGroup);
-			});
-		})
-		.catch(error => {
-			console.error('Error loading park data:', error);
-		});
+      // Create a marker for each park and add it to the marker layer group
+      let marker = L.marker([lat, lon]);
+      let popupContent = `
+        <b>${name}</b><br>
+        <strong>Description:</strong> ${description}<br><br>
+        <strong>Weather Info:</strong> ${weatherInfo}<br><br>
+        <strong>URL:</strong> <a href="${url}" target="_blank">${url}</a>
+      `;
+      marker.bindPopup(popupContent);
+      marker.addTo(markerLayerGroup);
+    });
+  })
+  .catch(error => {
+    console.error('Error loading park data:', error);
+  });
+
+// ... (Your previous code)
+
 
 	// Create a custom control for switching between street, topography, and markers
 	markerControl = L.control({ position: 'topright' });
@@ -246,20 +242,17 @@ let markerLayerGroup = L.layerGroup(); // Create layer group for markers
 		  });
 		}
 	  }
-	  
-	  // Add the GeoJSON layer with states data and event listener for single-click zoom
-	  geojson = L.geoJson(statesData, {
-		style: style,
-		onEachFeature: function (feature, layer) {
-		  layer.on({
-			mouseover: highlightFeature,
-			mouseout: resetHighlight,
-			click: zoomToStateAndShowMarkers // Attach the click event listener to zoom to state and show markers
-		  });
-		}
-	  }).addTo(map);
-	  map.on('click', zoomToStateAndShowMarkers);
-	  
 
-
-
+// Add the GeoJSON layer with states data and event listener for single-click zoom
+geojson = L.geoJson(statesData, {
+	style: style,
+	onEachFeature: function (feature, layer) {
+	  layer.on({
+		click: zoomToStateAndShowMarkers, // Attach the click event listener to zoom to state and show markers
+		mouseover: highlightFeature, // Add the mouseover event listener for the hover effect
+		mouseout: resetHighlight // Add the mouseout event listener for resetting the hover effect
+	  });
+	}
+  }).addTo(map);
+  
+  map.on('click', zoomToStateAndShowMarkers); // Add the click event listener to the map  
