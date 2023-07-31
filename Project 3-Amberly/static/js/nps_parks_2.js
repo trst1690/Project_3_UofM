@@ -1,28 +1,44 @@
-let map = L.map('map').setView([37.8, -96], 4);
+// Select data from json file to import
+console.log("Start loading data...");
+d3.json("my_database.nps_data_2.json")
+  .then(function(data) {
+    console.log("Data loaded successfully:", data);
+    const features = data.features; // Assuming the array of features is under the 'features' property
+    createMap(features);
+  })
+  .catch(function(error) {
+    console.error("Error loading data:", error);
+  });
+
+ //Create base layers
+ function createMap(stateparks) 
+  let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
+
+  let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  });
+
+  //Create a baseMaps Object.
+  let baseMaps = {
+    "Street": street,
+    "Topographic": topo
+  };
 
 	let tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
 
-	// Create a new map to add layers
-	let Mymap = L.map("mymap", {
-	  center: [38.7128, -94.0059],
-	  zoom: 3.6,
-	  layers: [streetLayer] // Start with the "Street" layer as the default
-	});
-	
-	// Add the "stateparksLayer" to the overlays object
-	let overlays = {
-	  "StateParks": stateparksLayer,
-	  "Markers": markerLayerGroup, // Add the marker layer group as an overlay
-	  "Choropleth": choroplethLayer // Add the choropleth layer as an overlay
-	};
-	
-	// Create a layer control containing our baseMaps and overlays
-	L.control.layers(baseMaps, overlays, {
-	  collapsed: false
-	}).addTo(Mymap);	
+  // Create base layers
+  let streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  });
+  
+  let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  });
     
 	// control that shows state info on hover
 	let info = L.control();
@@ -40,6 +56,7 @@ let map = L.map('map').setView([37.8, -96], 4);
         'Number of Parks: ' + props.numberOfParks :
         'Hover over a state');
 };
+
 	info.addTo(map);
 
 	// get color depending on Region
@@ -97,7 +114,6 @@ let map = L.map('map').setView([37.8, -96], 4);
 			click: zoomToFeature
 		});
 	}
-statesData=[]
 
 	/* global statesData */
 	geojson = L.geoJson(statesData, {
@@ -161,5 +177,72 @@ const markerLayerGroup = L.layerGroup(); // Create layer group for markers
 	const overlayMaps = {
 		"Markers": markerLayerGroup, // Add the marker layer group as an overlay
 	};
+
 	// Add the layer control to the map, allowing users to toggle the visibility of markers
 	L.control.layers(null, overlayMaps).addTo(map);
+
+// Load US states GeoJSON data
+function loadUSStatesData() {
+	return new Promise((resolve, reject) => {
+	  // Replace 'us-states.js' with the correct path to your GeoJSON file
+	  $.getJSON("us-states.js")
+		.done(function(data) {
+		  resolve(data);
+		})
+		.fail(function(error) {
+		  reject(error);
+		});
+	});
+  }
+  function createChoroplethLayer(geoJSONData) {
+	return L.geoJSON(geoJSONData, {
+	  style: function(feature) {
+		const stateCode = feature.properties.code; // Assuming the state code is available in the GeoJSON data
+		const value = choroplethData[stateCode]; // Get the value from choroplethData object
+		return {
+		  fillColor: getColor(value), // Define a function to get the color based on value
+		  weight: 2,
+		  opacity: 1,
+		  color: 'white',
+		  dashArray: '3',
+		  fillOpacity: 0.7
+		};
+	  },
+	  onEachFeature: function(feature, layer) {
+		// Bind a popup showing the state name and the value from choroplethData
+		const stateName = feature.properties.name;
+		const stateCode = feature.properties.code;
+		const value = choroplethData[stateCode] || "N/A"; // Provide a default value if no data is available
+		layer.bindPopup(`<b>${stateName}</b><br>Value: ${value}`);
+	  }
+	});
+  }
+  function getColor(value) {
+	// Customize this function to define the color scale based on your data values
+	return value >= 100 ? '#800026' :
+		   value >= 50  ? '#BD0026' :
+		   value >= 20  ? '#E31A1C' :
+		   value >= 10  ? '#FC4E2A' :
+		   value >= 5   ? '#FD8D3C' :
+		   value >= 2   ? '#FEB24C' :
+		   value >= 1   ? '#FED976' :
+						  '#FFEDA0';
+  }
+  function loadChoroplethLayer(map) {
+	loadUSStatesData()
+	  .then(function(geoJSONData) {
+		const choroplethLayer = createChoroplethLayer(geoJSONData);
+		choroplethLayer.addTo(map);
+	  })
+	  .catch(function(error) {
+		console.error("Error loading US states data:", error);
+	  });
+  }
+  loadChoroplethLayer(map);
+
+
+  
+   
+
+  
+			
