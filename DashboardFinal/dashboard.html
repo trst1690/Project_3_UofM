@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>National Park Services</title>
+    <!-- BootStrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="crossorigin="" />
+    <!-- Our CSS -->
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+  </head>
+
+  <body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>National Park Services</title>
+       <!-- CSS WEBPAGE STYLE SOURCE CODE:https://getbootstrap.com/docs/4.0/components/jumbotron/ -->
+      <div class="container">
+        <div class="jumbotron text-center" style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
+          <h1 style="font-family: 'Arial', sans-serif; color: #007bff;"><strong>U.S. National Park Service Dashboard</strong></h1>
+          <hr class="my-4">
+          <p style="font-family: 'Verdana', sans-serif; color: #333;">Select State to See State Park Information</p>
+          <p class="lead"></p>
+          <a class="zoomchart" href="../ZoomChart/ZoomChartFiles/zoom.html" target="_blank" role="button">ZoomChart Visualization Here</a>
+          <br>
+          <a class="map" href="../Leaflet/HTML_URM.html" target="_blank" role="button">Leaflet Visualization Here</a>
+          <br>
+        </div>
+        <div class="row">
+          <!-- Image -->
+          <div class="col-md-7">
+            <img id="stateImage" src="" alt="State Image" style="width: 100%; height: auto;">
+          </div>
+          <!-- Bar chart -->
+          <div class="col-md-4">
+            <div class="well" style="background-color: #f8f9fa; border-radius: 5px; box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);">
+              <h5 style="font-family: 'Arial', sans-serif; color: #007bff;"><strong>State Selection:</strong></h5>
+              <select id="selDataset" onchange="optionChanged(this.value)" style="font-family: 'Verdana', sans-serif; color: #333; padding: 5px;"></select>
+            </div>
+            <div id="bar" style="width: 500px; height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-7"></div>
+        <div id="mymap"></div> 
+
+    <!-- D3 JavaScript -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="crossorigin=""></script>
+    <!-- Leaflet-Heat JS -->
+    <script type="text/javascript" src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    
+    <!-- The div that holds our map in dashboard-->
+    
+    <style>  #mymap {
+      width: 1000px;
+      height: 600px;
+      margin: auto; /* Center horizontally */
+      display: flex; /* Center vertically */
+      justify-content: center;
+      align-items: center;
+    }
+    </style>
+
+    <!-- Our JavaScript-->
+    <script src="./static/js/app.js"></script>
+    <script type="text/javascript" src="./static/js/us-states.js"></script>
+    <script type="text/javascript" src="my_database.nps_data.json"></script>
+    <script src="./static/js/ryan.js"></script>
+    <script src="./static/js/nps_parks.js"></script>
+
+    
+    <!-- Style -->
+    <style>#map { width: 800px; height: 500px; }
+    .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+    .legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
+    </style>
+    <style>
+    body {
+    background-color: #5766c6; /* background color of webpage */
+    }
+    </style>
+    
+  
+
+    <!--ZoomCharts JavaScript Library referenced in ZoomChart folder -->
+    <!-- **ZoomChart Liscense Effective Until 08/25/23**  -->
+    
+  </body>
+
+</html>
+

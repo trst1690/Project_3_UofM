@@ -1,0 +1,50 @@
+/* Remove the default margin and padding from the body. */
+body {
+    height: 100%;
+            margin: 0;
+        }
+        .leaflet-container {
+            height: 800px;
+            width: 600px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+#mymap { width: 900px; height: 600px; }
+.legend {
+    background-color: rgb(255, 255, 255);
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .legend i {
+    width: 15px;
+    height: 15px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+  
+  /* CSS for the popup */
+.leaflet-popup-content {
+    /* Set the maximum width of the popup */
+    max-width: 250px;
+  }
+  
+  .leaflet-popup-content h1,
+  .leaflet-popup-content h2,
+  .leaflet-popup-content h3 {
+    /* Adjust font size and spacing for headers */
+    margin: 5px 0;
+    font-size: 12px;
+  }
+  
+  .leaflet-popup-content p {
+    /* Adjust font size and spacing for paragraphs */
+    margin: 5px 0;
+    font-size: 7px;
+  }
+  
