@@ -10,6 +10,8 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://unpkg.com/leaflet-choropleth/dist/leaflet-choropleth.js"></script>
 
 	<style>
 		html, body {
@@ -25,8 +27,8 @@
 	</style>
 
 	<style>#map { width: 800px; height: 500px; }
-.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
+	.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+	.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
 </head>
 <body>
 
@@ -34,17 +36,20 @@
 
 <script type="text/javascript" src="us-states.js"></script>
 <script type="text/javascript" src="my_database.nps_data.json"></script>
-<script type="text/javascript" src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-
 <script type="text/javascript">
 	let map = L.map('map').setView([37.8, -96], 4);
 
-
-	let tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	let streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
-    
+	});
+
+	let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+	});
+
+	let tiles = streetLayer.addTo(map); // Set the default layer to street
+
 	// control that shows state info on hover
 	let info = L.control();
 
@@ -148,8 +153,10 @@
 
 	legend.addTo(map);
 
-// Load the park data from the JSON file and create markers
-const markerLayerGroup = L.layerGroup(); // Create layer group for markers
+	// Load the park data from the JSON file and create markers
+	const markerLayerGroup = L.layerGroup(); // Create layer group for markers
+	let markerControl;
+
 	fetch('my_database.nps_data.json')
 		.then(response => response.json())
 		.then(data => {
@@ -173,19 +180,103 @@ const markerLayerGroup = L.layerGroup(); // Create layer group for markers
 				marker.bindPopup(popupContent);
 				marker.addTo(markerLayerGroup);
 			});
+
+			// Create a custom control for switching between street, topography, and markers
+			markerControl = L.control({ position: 'topright' });
+
+			markerControl.onAdd = function (map) {
+				const div = L.DomUtil.create('div', 'marker-control');
+
+				// Create radio buttons for choosing base layer
+				const inputStreet = L.DomUtil.create('input', 'map-layer');
+				inputStreet.type = 'radio';
+				inputStreet.name = 'base-layer';
+				inputStreet.value = 'street';
+				inputStreet.checked = true; // Show street layer by default
+				inputStreet.addEventListener('change', function () {
+					if (this.checked) {
+						map.removeLayer(topoLayer);
+						map.addLayer(streetLayer);
+					}
+				});
+
+				const labelStreet = L.DomUtil.create('label', 'layer-label');
+				labelStreet.innerHTML = 'Street';
+				labelStreet.setAttribute('for', 'street');
+
+				const inputTopo = L.DomUtil.create('input', 'map-layer');
+				inputTopo.type = 'radio';
+				inputTopo.name = 'base-layer';
+				inputTopo.value = 'topo';
+				inputTopo.addEventListener('change', function () {
+					if (this.checked) {
+						map.removeLayer(streetLayer);
+						map.addLayer(topoLayer);
+					}
+				});
+
+				const labelTopo = L.DomUtil.create('label', 'layer-label');
+				labelTopo.innerHTML = 'Topography';
+				labelTopo.setAttribute('for', 'topo');
+
+				// Create checkbox for markers
+				const inputMarkers = L.DomUtil.create('input', 'map-layer');
+				inputMarkers.type = 'checkbox';
+				inputMarkers.name = 'show-markers';
+				inputMarkers.value = 'markers';
+				inputMarkers.checked = false; // Show markers by default
+				inputMarkers.addEventListener('change', function () {
+					if (this.checked) {
+						markerLayerGroup.addTo(map);
+					} else {
+						markerLayerGroup.removeFrom(map);
+					}
+				});
+
+				const labelMarkers = L.DomUtil.create('label', 'layer-label');
+				labelMarkers.innerHTML = 'Markers';
+				labelMarkers.setAttribute('for', 'markers');
+
+				// Append elements to the control div
+				div.appendChild(inputStreet);
+				div.appendChild(labelStreet);
+				div.appendChild(inputTopo);
+				div.appendChild(labelTopo);
+				div.appendChild(inputMarkers);
+				div.appendChild(labelMarkers);
+
+				return div;
+			};
+
+			markerControl.addTo(map); // Add the custom control to the map
 		})
 		.catch(error => {
 			console.error('Error loading park data:', error);
 		});
 
-	// Create an object to hold the base layers and overlay layers for the layer control
-	const overlayMaps = {
-		"Markers": markerLayerGroup, // Add the marker layer group as an overlay
-	};
-
-	// Add the layer control to the map, allowing users to toggle the visibility of markers
-	L.control.layers(null, overlayMaps).addTo(map);
-
+	// Load the state data from the us-states.js file
+	fetch('us-states.js')
+		.then(response => response.json())
+		.then(data => {
+			// Create a choropleth map layer and add it to the map
+			L.choropleth(data, {
+				valueProperty: 'numberOfParks', // The property in the geojson data that contains the value for coloring
+				scale: ['white', 'green'], // Color scale range
+				steps: 5, // Number of steps in the color scale
+				mode: 'q', // Mode for distributing colors in the scale (quantile)
+				style: {
+					color: '#fff', // Border color for the states
+					weight: 2, // Border weight for the states
+					fillOpacity: 0.7 // Opacity for the state colors
+				},
+				onEachFeature: function (feature, layer) {
+					layer.bindPopup('State: ' + feature.properties.name + '<br>Number of Parks: ' + feature.properties.numberOfParks);
+				}
+			}).addTo(map);
+		})
+		.catch(error => {
+			console.error('Error loading state data:', error);
+		});
 </script>
 
 </body>
