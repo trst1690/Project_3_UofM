@@ -1,28 +1,19 @@
 let map = L.map('map').setView([37.8, -96], 4);
 
+let streetLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	});
+
+	let topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+	});
+
+
 	let tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
-
-	// Create a new map to add layers
-	let Mymap = L.map("mymap", {
-	  center: [38.7128, -94.0059],
-	  zoom: 3.6,
-	  layers: [streetLayer] // Start with the "Street" layer as the default
-	});
-	
-	// Add the "stateparksLayer" to the overlays object
-	let overlays = {
-	  "StateParks": stateparksLayer,
-	  "Markers": markerLayerGroup, // Add the marker layer group as an overlay
-	  "Choropleth": choroplethLayer // Add the choropleth layer as an overlay
-	};
-	
-	// Create a layer control containing our baseMaps and overlays
-	L.control.layers(baseMaps, overlays, {
-	  collapsed: false
-	}).addTo(Mymap);	
     
 	// control that shows state info on hover
 	let info = L.control();
@@ -40,6 +31,7 @@ let map = L.map('map').setView([37.8, -96], 4);
         'Number of Parks: ' + props.numberOfParks :
         'Hover over a state');
 };
+
 	info.addTo(map);
 
 	// get color depending on Region
@@ -97,8 +89,16 @@ let map = L.map('map').setView([37.8, -96], 4);
 			click: zoomToFeature
 		});
 	}
-statesData=[]
-
+	fetch("path/to/states_data.json")
+	.then(response => response.json())
+	.then(data => {
+	  // The fetched data is in JSON format, assign it to the statesData array
+	  statesData = data;
+  	})
+	.catch(error => {
+	  console.error("Error loading states data:", error);
+	});
+  
 	/* global statesData */
 	geojson = L.geoJson(statesData, {
 		style: style,
@@ -128,22 +128,22 @@ statesData=[]
 	legend.addTo(map);
 
 // Load the park data from the JSON file and create markers
-const markerLayerGroup = L.layerGroup(); // Create layer group for markers
+let markerLayerGroup = L.layerGroup(); // Create layer group for markers
 	fetch('my_database.nps_data.json')
 		.then(response => response.json())
 		.then(data => {
 			data.forEach(park => {
-				const name = park.name;
-				const description = park.description;
-				const region = park.Region;
-				const lat = park.latitude;
-				const lon = park.longitude;
-				const url = park.url;
-				const weatherInfo = park.weatherInfo;
+				let name = park.name;
+				let description = park.description;
+				let region = park.Region;
+				let lat = park.latitude;
+				let lon = park.longitude;
+				let url = park.url;
+				let weatherInfo = park.weatherInfo;
 
 				// Create a marker for each park and add it to the marker layer group
-				const marker = L.marker([lat, lon]);
-				const popupContent = `
+				let marker = L.marker([lat, lon]);
+				let popupContent = `
 					<b>${name}</b><br>
 					<strong>Description:</strong> ${description}<br><br>
 					<strong>Weather Info:</strong> ${weatherInfo}<br><br>
@@ -157,9 +157,109 @@ const markerLayerGroup = L.layerGroup(); // Create layer group for markers
 			console.error('Error loading park data:', error);
 		});
 
-	// Create an object to hold the base layers and overlay layers for the layer control
-	const overlayMaps = {
-		"Markers": markerLayerGroup, // Add the marker layer group as an overlay
+	// Create a custom control for switching between street, topography, and markers
+	markerControl = L.control({ position: 'topright' });
+
+	markerControl.onAdd = function (map) {
+		let div = L.DomUtil.create('div', 'marker-control');
+
+		// Create radio buttons for choosing base layer
+		let inputStreet = L.DomUtil.create('input', 'map-layer');
+		inputStreet.type = 'radio';
+		inputStreet.name = 'base-layer';
+		inputStreet.value = 'street';
+		inputStreet.checked = true; // Show street layer by default
+		inputStreet.addEventListener('change', function () {
+			if (this.checked) {
+				map.removeLayer(topoLayer);
+				map.addLayer(streetLayer);
+			}
+		});
+
+		let labelStreet = L.DomUtil.create('label', 'layer-label');
+		labelStreet.innerHTML = 'Street';
+		labelStreet.setAttribute('for', 'street');
+
+		let inputTopo = L.DomUtil.create('input', 'map-layer');
+		inputTopo.type = 'radio';
+		inputTopo.name = 'base-layer';
+		inputTopo.value = 'topo';
+		inputTopo.addEventListener('change', function () {
+			if (this.checked) {
+				map.removeLayer(streetLayer);
+				map.addLayer(topoLayer);
+			}
+		});
+
+		let labelTopo = L.DomUtil.create('label', 'layer-label');
+		labelTopo.innerHTML = 'Topography';
+		labelTopo.setAttribute('for', 'topo');
+
+		// Create checkbox for markers
+		let inputMarkers = L.DomUtil.create('input', 'map-layer');
+		inputMarkers.type = 'checkbox';
+		inputMarkers.name = 'show-markers';
+		inputMarkers.value = 'markers';
+		inputMarkers.checked = false; // Show markers by default
+		inputMarkers.addEventListener('change', function () {
+			if (this.checked) {
+				markerLayerGroup.addTo(map);
+			} else {
+				markerLayerGroup.removeFrom(map);
+			}
+		});
+
+		let labelMarkers = L.DomUtil.create('label', 'layer-label');
+		labelMarkers.innerHTML = 'Markers';
+		labelMarkers.setAttribute('for', 'markers');
+
+		// Append elements to the control div
+		div.appendChild(inputStreet);
+		div.appendChild(labelStreet);
+		div.appendChild(inputTopo);
+		div.appendChild(labelTopo);
+		div.appendChild(inputMarkers);
+		div.appendChild(labelMarkers);
+
+		return div;
 	};
-	// Add the layer control to the map, allowing users to toggle the visibility of markers
-	L.control.layers(null, overlayMaps).addTo(map);
+
+	markerControl.addTo(map); // Add the custom control to the map
+
+	function zoomToStateAndShowMarkers(e) {
+		// Check if the clicked feature is a state
+		if (e.target.feature && e.target.feature.properties && e.target.feature.properties.name) {
+		  const stateName = e.target.feature.properties.name;
+		  const stateBounds = e.target.getBounds();
+	  
+		  // Zoom to the selected state
+		  map.fitBounds(stateBounds);
+	  
+		  // Show only the markers in the selected state
+		  markerLayerGroup.eachLayer(marker => {
+			const markerLatlng = marker.getLatLng();
+			if (stateBounds.contains(markerLatlng)) {
+			  marker.addTo(map);
+			} else {
+			  marker.removeFrom(map);
+			}
+		  });
+		}
+	  }
+	  
+	  // Add the GeoJSON layer with states data and event listener for single-click zoom
+	  geojson = L.geoJson(statesData, {
+		style: style,
+		onEachFeature: function (feature, layer) {
+		  layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToStateAndShowMarkers // Attach the click event listener to zoom to state and show markers
+		  });
+		}
+	  }).addTo(map);
+	  map.on('click', zoomToStateAndShowMarkers);
+	  
+
+
+

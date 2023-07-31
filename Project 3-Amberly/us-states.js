@@ -1,4 +1,4 @@
-statesData = {
+var statesData = {
     "type": "FeatureCollection",
     "features": [{
         "type": "Feature",

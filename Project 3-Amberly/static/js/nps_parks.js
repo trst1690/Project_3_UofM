@@ -63,7 +63,7 @@ d3.json("my_database.nps_data_2.json")
       if (feature.properties.activities && feature.properties.activities.length > 0) {
         let activitiesList = feature.properties.activities.map((activity) => activity.name).join(", ");
         marker.bindPopup(`
-          <h1>Full Name: ${feature.properties.fullName}</h1>
+          <h1><strong>Full Name: ${feature.properties.fullName}</strong></h1>
           <h2>Designation: ${feature.properties.designation}</h2>
           <h3>Activities: ${activitiesList}</h3>
         `);
@@ -93,4 +93,35 @@ d3.json("my_database.nps_data_2.json")
   L.control.layers(baseMaps, overlays, {
     collapsed: false
   }).addTo(Mymap);
+
+// Create a legend
+let legend = L.control({ position: "bottomright" });
+
+legend.onAdd = function () {
+  let div = L.DomUtil.create("div", "legend");
+  let designations = [
+    "Park",
+    "Trail",
+    "River",
+    "Preserve",
+    "Lake",
+    "Monument",
+    "Historic Site",
+    "Others"
+  ];
+  let colors = ["green", "brown", "blue", "coral", "lightblue", "yellow", "black", "grey"];
+
+  // Loop through each designation and create a legend item
+  for (let i = 0; i < designations.length; i++) {
+    div.innerHTML +=
+      '<i style="background:' + colors[i] + '"></i> ' + designations[i] + "<br>";
+  }
+  return div;
+};
+
+// Add the legend to the map
+legend.addTo(Mymap);
+
+
+
 }
