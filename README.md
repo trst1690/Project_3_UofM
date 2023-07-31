@@ -15,11 +15,9 @@ The U.S National Park Service API has a variety of comprehensive park data in th
 In this project, our main focus was on API parks, which provide an extensive list of park activities, addresses, coordinates, contacts, descriptions, designations, park names, images, weather information, etc. To gather this park data, we utilized API calls within a Flask app, and then connected the retrieved data to a MongoDB database. From there, we used JavaScript to process the data for the visualizations, which were integrated into a Bootstrap HTML page.
 
 
-<<<<<<< HEAD
-![Our Data Retrieval Process](https://github.com/trst1690/Project_3_UofM/assets/126814705/e67eed6a-31be-4bb6-b81d-70c9b1a0f857)
-=======
+
 ![OUR DATA RETRIEVAL PROCESS](../dataprocess.png)
->>>>>>> f02ffed (FinalVer.)
+
 
 
 
