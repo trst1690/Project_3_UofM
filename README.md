@@ -4,7 +4,7 @@
 
 
 _____________________________________________________________________________________________________________________________
-PROJECT DETAILS: 
+PROJECT DETAILS: DashboardFinal for all documentation
 
 _____________________________________________________________________________________________________________________________
 
@@ -15,7 +15,10 @@ The U.S National Park Service API has a variety of comprehensive park data in th
 In this project, our main focus was on API parks, which provide an extensive list of park activities, addresses, coordinates, contacts, descriptions, designations, park names, images, weather information, etc. To gather this park data, we utilized API calls within a Flask app, and then connected the retrieved data to a MongoDB database. From there, we used JavaScript to process the data for the visualizations, which were integrated into a Bootstrap HTML page.
 
 
-![Our Data Retrieval Process](https://github.com/trst1690/Project_3_UofM/assets/126814705/e67eed6a-31be-4bb6-b81d-70c9b1a0f857)
+
+
+![dataprocess](https://github.com/trst1690/Project_3_UofM/assets/126814705/71dd8aaa-f54f-4441-8875-e6ca76b74664)
+
 
 
 
@@ -40,9 +43,11 @@ We utilized the ZoomChart JavaScript Library to create a map visualization with 
 
 LEAFLET JAVASCRIPT LIBRARY
 
-We used Leaflet Javascript Library to create two additional map visualizations and a bar chart. One Leaflet map visualization contains markers for all 470 National Park sites. The markers are color coded depending on the designation of the park (e.g., trail, monument, park, etc.). Clicking on a marker will enable a popup with respective site’s full name, designation type, and list of activities available.  
+We used Leaflet Javascript Library to create two additional map visualizations and a bar chart. One Leaflet map visualization contains markers for all 470 National Park sites. The markers are color coded depending on the designation of the park (e.g., trail, monument, park, etc.). Clicking on a marker will enable a popup with respective site’s full name, designation type, and list of activities available. We also created a similar map divided into four regions (East, West, Midwest, & South) using L.geoJSON to create a layer for state boundaries. This map has hover-over functionality, zoom feature, and descriptive popups for markers with park description, weather info, and url link to the park website. 
 
+JAVASCRIP
 
+We exported from MongoDB to get our DF in Json to build the Bar Chart and Drop Down.  Our Bar Chart, once a state is seleted from the drop down will give an image of the selected state park, as well as a chart indication the number of 'types' of national parks available for visiting in that particular state.
 
 Tools: Flask App, JavaScript, HTML, CSS, Pandas, MongoDB, ZoomChart (JavaScript Library), & Leaflet
 
