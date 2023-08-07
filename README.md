@@ -47,7 +47,7 @@ We used Leaflet Javascript Library to create two additional map visualizations a
 
 DASBOARD FUNCTIONALITY
 
-We exported data from MongoDB to obtain our DataFrame in JSON format, which we then used to construct the Bar Chart and Drop Down components. When a state is selected from the drop-down menu, our Bar Chart displays an image of the corresponding state park along with a chart indicating the number of different types of national parks available for visiting in that specific state. When selecting the state of Delaware in the dashboard, no data populates, which aligns with our observation that the NPS API lacks available data for this particular state. 
+We exported data from MongoDB to obtain our DataFrame in JSON format, which we then used to construct the Bar Chart and Drop Down components. When a state is selected from the drop-down menu, our Bar Chart displays an image of the corresponding state park along with a chart indicating the number of different types of national parks available for visiting in that specific state. When selecting the state of Delaware in the dashboard, no data populates, which aligns with our observation that the NPS API lacks available data for this particular state. Please reference park_data.ipynb file.
 
 Tools: Flask App, JavaScript, HTML, CSS, Pandas, MongoDB, ZoomChart (JavaScript Library), & Leaflet
 
